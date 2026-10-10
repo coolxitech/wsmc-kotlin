@@ -1,0 +1,15 @@
+{
+    "pack": {
+        "description": "WSMC resources",
+        "pack_format": 84,
+        "min_format": [
+            84,
+            0
+        ],
+        "max_format": [
+            101,
+            1
+        ],
+        "_comment": "Minecraft 26.1 uses resource pack format 84.0 and data pack format 101.1."
+    }
+}

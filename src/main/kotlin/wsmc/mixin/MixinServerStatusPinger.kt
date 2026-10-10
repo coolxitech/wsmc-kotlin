@@ -1,0 +1,32 @@
+package wsmc.mixin
+
+import com.llamalad7.mixinextras.sugar.Local
+import net.minecraft.client.multiplayer.ServerStatusPinger
+import net.minecraft.client.multiplayer.resolver.ServerAddress
+import org.spongepowered.asm.mixin.Debug
+import org.spongepowered.asm.mixin.Mixin
+import org.spongepowered.asm.mixin.injection.At
+import org.spongepowered.asm.mixin.injection.Inject
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
+import wsmc.IConnectionEx
+import wsmc.IWebSocketServerAddress
+
+@Debug(export = true)
+@Mixin(ServerStatusPinger::class)
+class MixinServerStatusPinger {
+    @Inject(
+        method = ["pingServer"],
+        require = 1,
+        at = [At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/network/Connection;connectToServer(Ljava/net/InetSocketAddress;Lnet/minecraft/server/network/EventLoopGroupHolder;Lnet/minecraft/util/debugchart/LocalSampleLogger;)Lnet/minecraft/network/Connection;"
+        )]
+    )
+    fun beforeCallConnect(
+        callback: CallbackInfo,
+        @Local(ordinal = 0, argsOnly = false) serverAddress: ServerAddress
+    ) {
+        val wsAddress = IWebSocketServerAddress.from(serverAddress)
+        IConnectionEx.connectToServerArg.push(wsAddress)
+    }
+}
