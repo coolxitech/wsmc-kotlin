@@ -4,7 +4,7 @@ plugins {
 	id 'idea'
 	id 'maven-publish'
 	id 'org.jetbrains.kotlin.jvm' version '2.4.20'
-	id 'net.neoforged.gradle.userdev' version '7.1.38'
+	id 'net.neoforged.gradle.userdev' version '7.1.20'
 }
 
 apply from: '../common.gradle'
@@ -15,11 +15,11 @@ project.ext.mod_id = project.archives_base_name;
 version = project.mod_version
 group = project.dev_group // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 
-// Minecraft 26.1 requires Java 25.
-java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+// Mojang ships Java 21 to end users starting in 1.20.5, so mods should target Java 21.
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 kotlin {
-	jvmToolchain(25)
+	jvmToolchain(21)
 	compilerOptions {
 		javaParameters.set(true)
 	}
@@ -36,12 +36,21 @@ base {
 // "optional", meaning it will not be pulled by dependents of this mod.
 configurations {
 	runtimeClasspath.extendsFrom localRuntime
+
+	libraries
+		// This will make sure that all dependencies that you add to the libraries configuration will also be added to the implementation configuration
+		// This way, you only need one dependency declaration for both runtime and compile dependencies
+	implementation.extendsFrom libraries
 }
 
 // Default run configurations.
 // These can be tweaked, removed, or duplicated as needed.
 runs {
 	configureEach {
+		dependencies {
+			runtime project.configurations.libraries
+		}
+
 		workingDirectory project.file('run')
 
 		// Recommended logging data for a userdev environment
@@ -100,7 +109,7 @@ tasks.named('jar', Jar).configure {
 		])
 	}
 }
-jar.archiveClassifier.set("neoforge-${project.minecraft_version}")
+jar.archiveClassifier = 'neoforge';
 
 // This block of code expands all declared replace properties in the specified resource targets.
 // A missing property will result in an error. Properties are expanded using ${} Groovy notation.
@@ -118,10 +127,6 @@ tasks.withType(ProcessResources).configureEach {
 
 tasks.withType(JavaCompile).configureEach {
 	options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
-}
-
-tasks.withType(JavaExec).configureEach {
-	standardInput = System.in
 }
 
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.

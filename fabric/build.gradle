@@ -1,5 +1,5 @@
 plugins {
-	id 'net.fabricmc.fabric-loom' version '1.15.5'
+	id 'fabric-loom' version '1.14.10'
 	id 'org.jetbrains.kotlin.jvm' version '2.4.20'
 	id 'maven-publish'
 }
@@ -7,10 +7,8 @@ plugins {
 apply from: '../common.gradle'
 
 loom {
-	mods {
-		"${project.archives_base_name}" {
-			sourceSet sourceSets.main
-		}
+	mixin {
+		defaultRefmapName = "wsmc.refmap.json"
 	}
 
 	// runs.configureEach { vmArgs("-Dwsmc.debug=true") }
@@ -19,13 +17,14 @@ loom {
 dependencies {
 	//to change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	mappings loom.officialMojangMappings()
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
-	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	// javax.annotation.Nullable
-	implementation 'com.google.code.findbugs:jsr305:3.0.1'
+	modImplementation 'com.google.code.findbugs:jsr305:3.0.1'
 }
 
 
@@ -59,35 +58,30 @@ sourceSets {
 }
 
 // ensure that the encoding is set to UTF-8, no matter what the system default is
-// this fixes some edge cases with special characters not displaying correctly
-// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
 tasks.withType(JavaCompile).configureEach {
 	options.encoding = "UTF-8"
 
-	// Minecraft 26.1 and upwards uses Java 25.
-	it.options.release = 25
+	// Minecraft 1.20.5 and upwards uses Java 21.
+	it.options.release = 21
 }
 
 java {
-	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-	// if it is present.
-	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 
-	sourceCompatibility = JavaVersion.VERSION_25
-	targetCompatibility = JavaVersion.VERSION_25
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 }
 
 kotlin {
 	jvmToolchain(25)
 	compilerOptions {
 		javaParameters.set(true)
+		jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
 	}
 }
 
 jar {
 	inputs.property "archivesName", project.base.archivesName
-	archiveClassifier.set("fabric-${project.minecraft_version}")
 
 	from("LICENSE") {
 		rename { "${it}_${inputs.properties.archivesName}"}
@@ -95,5 +89,12 @@ jar {
 
 	manifest {
 		attributes('Implementation-Timestamp': new Date().toString())
+	}
+}
+
+// https://github.com/FabricMC/fabric-loom/issues/452
+afterEvaluate {
+	tasks.remapJar {
+		archiveClassifier.set("fabric")
 	}
 }
