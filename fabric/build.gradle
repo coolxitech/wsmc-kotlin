@@ -6,6 +6,11 @@ plugins {
 
 apply from: '../common.gradle'
 
+repositories {
+	// Modmenu dev
+	maven { url 'https://maven.terraformersmc.com/releases/' }
+}
+
 loom {
 	mixin {
 		defaultRefmapName = "wsmc.refmap.json"
@@ -23,8 +28,16 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
+	// Modmenu dev
+	modImplementation("com.terraformersmc:modmenu:${project.mod_menu_version}") {
+		exclude(group: "net.fabricmc.fabric-api")
+	}
+
 	// javax.annotation.Nullable
 	modImplementation 'com.google.code.findbugs:jsr305:3.0.1'
+
+	// MixinExtras (Kotlin mixin 使用 @Local sugar)
+	include(implementation("io.github.llamalad7:mixinextras-fabric:0.4.1"))
 
 	// Netty's http and websocket support
 	include(modImplementation(group: 'io.netty', name: 'netty-codec-http', version: project.netty_version))
