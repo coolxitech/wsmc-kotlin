@@ -2,12 +2,12 @@ package wsmc.neoforge
 
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
-import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.fml.common.Mod
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent
 import wsmc.UnitTest
 import wsmc.WSMC
 
-@EventBusSubscriber(value = [Dist.CLIENT], modid = WSMC.MODID, bus = EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(value = [Dist.CLIENT], modid = WSMC.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 class ClientRegistrationHandler {
     companion object {
         @JvmStatic

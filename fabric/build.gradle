@@ -64,22 +64,22 @@ sourceSets {
 tasks.withType(JavaCompile).configureEach {
 	options.encoding = "UTF-8"
 
-	// Minecraft 1.20.5 and upwards uses Java 21.
-	it.options.release = 21
+	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
+	it.options.release = 17
 }
 
 java {
 	withSourcesJar()
 
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
 }
 
 kotlin {
-	jvmToolchain(25)
+	jvmToolchain(17)
 	compilerOptions {
 		javaParameters.set(true)
-		jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+		jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
 	}
 }
 

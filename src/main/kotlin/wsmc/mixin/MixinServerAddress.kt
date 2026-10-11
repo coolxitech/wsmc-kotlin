@@ -9,8 +9,6 @@ import org.spongepowered.asm.mixin.Shadow
 import org.spongepowered.asm.mixin.Unique
 import org.spongepowered.asm.mixin.injection.At
 import org.spongepowered.asm.mixin.injection.Inject
-import org.spongepowered.asm.mixin.injection.Redirect
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 import wsmc.IWebSocketServerAddress
 import wsmc.WebSocketConnectionInfo
@@ -24,14 +22,6 @@ class MixinServerAddress : IWebSocketServerAddress {
 
     @field:Unique
     private var connInfo: WebSocketConnectionInfo? = null
-
-    @Inject(method = ["<init>(Ljava/lang/String;I)V"], at = [At("RETURN")], require = 1)
-    private fun initWebSocketConnectionInfo(host: String, port: Int, callback: CallbackInfo) {
-        val connInfo = WebSocketConnectionInfo.parseUri(host)
-        if (connInfo != null) {
-            this.connInfo = connInfo
-        }
-    }
 
     override fun setWsConnectionInfo(connInfo: WebSocketConnectionInfo?) {
         this.connInfo = connInfo
@@ -86,29 +76,10 @@ class MixinServerAddress : IWebSocketServerAddress {
 
     companion object {
         @JvmStatic
-        @Redirect(
-            method = ["<init>(Ljava/lang/String;I)V"],
-            at = At(
-                value = "INVOKE",
-                target = "Lcom/google/common/net/HostAndPort;fromParts(Ljava/lang/String;I)Lcom/google/common/net/HostAndPort;"
-            ),
-            require = 1
-        )
-        fun parseWebSocketUriForConstructor(host: String, port: Int): HostAndPort {
-            val connInfo = WebSocketConnectionInfo.parseUri(host)
-            if (connInfo != null) {
-                return HostAndPort.fromParts(connInfo.uri.host!!, connInfo.uri.port)
-            }
-            return HostAndPort.fromParts(host, port)
-        }
-
-        @JvmStatic
         @Inject(at = [At("HEAD")], method = ["parseString"], require = 1, cancellable = true)
         fun parseString(uriString: String, callback: CallbackInfoReturnable<ServerAddress>) {
-            val connInfo = WebSocketConnectionInfo.parseUri(uriString)
-            if (connInfo != null) {
-                val serverAddress = ServerAddress(connInfo.uri.host!!, connInfo.uri.port)
-                ((serverAddress as Any) as IWebSocketServerAddress).setWsConnectionInfo(connInfo)
+            val serverAddress = WebSocketConnectionInfo.fromWsUri(uriString)
+            if (serverAddress != null) {
                 callback.returnValue = serverAddress
             }
         }
@@ -116,7 +87,7 @@ class MixinServerAddress : IWebSocketServerAddress {
         @JvmStatic
         @Inject(at = [At("HEAD")], method = ["isValidAddress"], require = 1, cancellable = true)
         fun isValidAddress(uriString: String, callback: CallbackInfoReturnable<Boolean>) {
-            if (WebSocketConnectionInfo.parseUri(uriString) != null) {
+            if (WebSocketConnectionInfo.fromWsUri(uriString) != null) {
                 callback.returnValue = true
             }
         }

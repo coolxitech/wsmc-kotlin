@@ -20,11 +20,11 @@ base {
 	archivesName = mod_id
 }
 
-// Mojang ships Java 21 to end users in 1.20.5+, so your mod should target Java 21.
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+// Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 kotlin {
-	jvmToolchain(21)
+	jvmToolchain(17)
 	compilerOptions {
 		javaParameters.set(true)
 	}
@@ -148,6 +148,13 @@ tasks.named('processResources', ProcessResources).configure {
 
 	filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
 		expand replaceProperties
+	}
+
+	// forge 1.20.4 是 srg-at-runtime，需要 srg refmap；Kotlin 编译不走 mixin AP，
+	// 用 forge 目录下手工维护的 srg refmap 覆盖共享的 identity 版本（neoforge/fabric 用 identity）。
+	def srgRefmapText = layout.projectDirectory.file('wsmc.refmap.json').asFile.text
+	doLast {
+		new File(destinationDir, 'wsmc.refmap.json').text = srgRefmapText
 	}
 }
 

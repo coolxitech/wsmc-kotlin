@@ -19,7 +19,7 @@ class MixinServerStatusPinger {
         require = 1,
         at = [At(
             value = "INVOKE",
-            target = "Lnet/minecraft/network/Connection;connectToServer(Ljava/net/InetSocketAddress;ZLnet/minecraft/util/debugchart/LocalSampleLogger;)Lnet/minecraft/network/Connection;"
+            target = "Lnet/minecraft/network/Connection;connectToServer(Ljava/net/InetSocketAddress;ZLnet/minecraft/util/SampleLogger;)Lnet/minecraft/network/Connection;"
         )]
     )
     fun beforeCallConnect(
