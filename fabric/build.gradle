@@ -24,6 +24,9 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
+	// Kotlin runtime is provided by Fabric Language Kotlin at runtime
+	implementation "net.fabricmc:fabric-language-kotlin:1.14.1+kotlin.2.4.20"
+
 	// javax.annotation.Nullable
 	implementation 'com.google.code.findbugs:jsr305:3.0.1'
 }

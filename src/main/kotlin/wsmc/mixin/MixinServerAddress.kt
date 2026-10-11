@@ -84,17 +84,17 @@ class MixinServerAddress : IWebSocketServerAddress {
         }
     }
 
-    companion object {
+    private companion object {
         @JvmStatic
         @Redirect(
             method = ["<init>(Ljava/lang/String;I)V"],
-            at = At(
+            at = [At(
                 value = "INVOKE",
                 target = "Lcom/google/common/net/HostAndPort;fromParts(Ljava/lang/String;I)Lcom/google/common/net/HostAndPort;"
-            ),
+            )],
             require = 1
         )
-        fun parseWebSocketUriForConstructor(host: String, port: Int): HostAndPort {
+        private fun parseWebSocketUriForConstructor(host: String, port: Int): HostAndPort {
             val connInfo = WebSocketConnectionInfo.parseUri(host)
             if (connInfo != null) {
                 return HostAndPort.fromParts(connInfo.uri.host!!, connInfo.uri.port)
@@ -104,7 +104,7 @@ class MixinServerAddress : IWebSocketServerAddress {
 
         @JvmStatic
         @Inject(at = [At("HEAD")], method = ["parseString"], require = 1, cancellable = true)
-        fun parseString(uriString: String, callback: CallbackInfoReturnable<ServerAddress>) {
+        private fun parseString(uriString: String, callback: CallbackInfoReturnable<ServerAddress>) {
             val connInfo = WebSocketConnectionInfo.parseUri(uriString)
             if (connInfo != null) {
                 val serverAddress = ServerAddress(connInfo.uri.host!!, connInfo.uri.port)
@@ -115,7 +115,7 @@ class MixinServerAddress : IWebSocketServerAddress {
 
         @JvmStatic
         @Inject(at = [At("HEAD")], method = ["isValidAddress"], require = 1, cancellable = true)
-        fun isValidAddress(uriString: String, callback: CallbackInfoReturnable<Boolean>) {
+        private fun isValidAddress(uriString: String, callback: CallbackInfoReturnable<Boolean>) {
             if (WebSocketConnectionInfo.parseUri(uriString) != null) {
                 callback.returnValue = true
             }

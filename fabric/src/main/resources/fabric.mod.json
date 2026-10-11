@@ -23,7 +23,8 @@
   ],
   "depends": {
     "minecraft": ">=${minecraft_version_min}",
-    "fabricloader": ">=${loader_version_min}"
+    "fabricloader": ">=${loader_version_min}",
+    "fabric-language-kotlin": ">=1.14.1"
   },
   "suggests": {
     "flamingo": "*"
