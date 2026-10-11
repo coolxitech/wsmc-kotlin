@@ -1,14 +1,15 @@
 {
 	"required": true,
 	"package": "wsmc.mixin",
-	"compatibilityLevel": "JAVA_21",
+	"compatibilityLevel": "JAVA_8",
+	"refmap": "wsmc.refmap.json",
 	"client": [
-		"MixinConnection",
-		"MixinConnectionChInit",
-		"MixinConnectScreen",
-		"MixinConnectScreenThread",
+		"MixinGuiConnecting",
+		"MixinGuiConnectingThread",
+		"MixinNetworkManager",
+		"MixinNetworkManagerChInit",
 		"MixinServerAddress",
-		"MixinServerStatusPinger"
+		"MixinServerPinger"
 	],
 	"minVersion": "0.8"
 }

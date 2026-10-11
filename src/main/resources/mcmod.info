@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "wsmc",
+    "name": "WSMC",
+    "description": "WebSocket wrapper for Minecraft Java",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "https://github.com/rikka0w0/wsmc",
+    "updateUrl": "",
+    "authorList": ["Rikka0_0"],
+    "credits": "mokocup",
+    "logoFile": "wsmc_logo.png",
+    "screenshots": [],
+    "dependencies": []
+  }
+]

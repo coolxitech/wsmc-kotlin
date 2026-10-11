@@ -1,6 +1,6 @@
 package wsmc
 
-import net.minecraft.client.multiplayer.resolver.ServerAddress
+import net.minecraft.client.multiplayer.ServerAddress
 
 /**
  * This will be mixined into vanilla class [ServerAddress].
