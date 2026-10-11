@@ -150,11 +150,12 @@ tasks.named('processResources', ProcessResources).configure {
 		expand replaceProperties
 	}
 
-	// forge 1.20.4 是 srg-at-runtime，需要 srg refmap；Kotlin 编译不走 mixin AP，
+	// forge 是 srg-at-runtime，需要 srg refmap；Kotlin 编译不走 mixin AP，
 	// 用 forge 目录下手工维护的 srg refmap 覆盖共享的 identity 版本（neoforge/fabric 用 identity）。
-	def srgRefmapText = layout.projectDirectory.file('wsmc.refmap.json').asFile.text
+	def srgRefmap = layout.projectDirectory.file('wsmc.refmap.json')
+	inputs.file(srgRefmap)
 	doLast {
-		new File(destinationDir, 'wsmc.refmap.json').text = srgRefmapText
+		new File(destinationDir, 'wsmc.refmap.json').text = srgRefmap.asFile.text
 	}
 }
 
