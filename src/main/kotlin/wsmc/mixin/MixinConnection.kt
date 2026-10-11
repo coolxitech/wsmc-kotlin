@@ -33,8 +33,8 @@ class MixinConnection : IConnectionEx {
             method = ["connectToServer"],
             require = 1,
             at = [At(
-                value = "INVOKE",
-                target = "Lnet/minecraft/network/Connection;connect(Ljava/net/InetSocketAddress;ZLnet/minecraft/network/Connection;)Lio/netty/channel/ChannelFuture;"
+                value = "NEW",
+                target = "()Lio/netty/bootstrap/Bootstrap;"
             )]
         )
         fun beforeCallConnect(

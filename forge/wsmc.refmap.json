@@ -1,8 +1,7 @@
 {
 	"mappings": {
 		"wsmc.mixin.MixinConnection": {
-			"connectToServer(Ljava/net/InetSocketAddress;Z)Lnet/minecraft/network/Connection;": "m_178300_",
-			"Lnet/minecraft/network/Connection;connect(Ljava/net/InetSocketAddress;ZLnet/minecraft/network/Connection;)Lio/netty/channel/ChannelFuture;": "Lnet/minecraft/network/Connection;m_290025_(Ljava/net/InetSocketAddress;ZLnet/minecraft/network/Connection;)Lio/netty/channel/ChannelFuture;"
+			"connectToServer(Ljava/net/InetSocketAddress;Z)Lnet/minecraft/network/Connection;": "m_178300_"
 		},
 		"wsmc.mixin.MixinServerStatusPinger": {
 			"pingServer(Lnet/minecraft/client/multiplayer/ServerData;Ljava/lang/Runnable;)V": "m_105459_",
@@ -13,10 +12,10 @@
 			"isValidAddress(Ljava/lang/String;)Z": "m_171867_"
 		},
 		"wsmc.mixin.MixinConnectScreen": {
-			"connect(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/multiplayer/resolver/ServerAddress;Lnet/minecraft/client/multiplayer/ServerData;)V": "m_247688_"
+			"connect(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/multiplayer/resolver/ServerAddress;)V": "m_169264_"
 		},
 		"wsmc.mixin.MixinConnectScreenThread": {
-			"Lnet/minecraft/network/Connection;connect(Ljava/net/InetSocketAddress;ZLnet/minecraft/network/Connection;)Lio/netty/channel/ChannelFuture;": "Lnet/minecraft/network/Connection;m_290025_(Ljava/net/InetSocketAddress;ZLnet/minecraft/network/Connection;)Lio/netty/channel/ChannelFuture;"
+			"Lnet/minecraft/network/Connection;connectToServer(Ljava/net/InetSocketAddress;Z)Lnet/minecraft/network/Connection;": "Lnet/minecraft/network/Connection;m_178300_(Ljava/net/InetSocketAddress;Z)Lnet/minecraft/network/Connection;"
 		}
 	},
 	"data": {}

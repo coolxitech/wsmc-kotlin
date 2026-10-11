@@ -2,7 +2,6 @@ package wsmc.mixin
 
 import com.llamalad7.mixinextras.sugar.Local
 import net.minecraft.client.multiplayer.resolver.ServerAddress
-import net.minecraft.network.Connection
 import org.spongepowered.asm.mixin.Debug
 import org.spongepowered.asm.mixin.Mixin
 import org.spongepowered.asm.mixin.Unique
@@ -29,15 +28,11 @@ class MixinConnectScreenThread {
         require = 1,
         at = [At(
             value = "INVOKE",
-            target = "Lnet/minecraft/network/Connection;connect(Ljava/net/InetSocketAddress;ZLnet/minecraft/network/Connection;)Lio/netty/channel/ChannelFuture;"
+            target = "Lnet/minecraft/network/Connection;connectToServer(Ljava/net/InetSocketAddress;Z)Lnet/minecraft/network/Connection;"
         )]
     )
-    fun beforeCallConnect(
-        callback: CallbackInfo,
-        @Local(ordinal = 0, argsOnly = false) connection: Connection
-    ) {
+    fun beforeCallConnect(callback: CallbackInfo) {
         val wsAddress = IWebSocketServerAddress.from(serverAddress!!)
-        val con = (connection as Any) as IConnectionEx
-        con.setWsInfo(wsAddress)
+        IConnectionEx.connectToServerArg.push(wsAddress)
     }
 }
