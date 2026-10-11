@@ -79,7 +79,38 @@ keyStorePassword=changeit
 # keyStoreType=PKCS12
 ```
 
+> **1.12.2 / Java 8 note**: The Forge 1.12.2 client runs on Java 8, which cannot parse the PBES2-encrypted PKCS12 that JDK 9+ keytool produces by default (loading fails with `parseAlgParameters failed: ObjectIdentifier() -- data isn't an object ID`). The client certificate must be generated or converted with a legacy algorithm, for example:
+>
+> ```bash
+> # Option A: re-wrap the existing p12 with a legacy algorithm (JDK 9+ keytool)
+> keytool -J-Dkeystore.pkcs12.legacy -importkeystore \
+>   -srckeystore wsmc-client.p12 -srcstoretype PKCS12 -srcstorepass <password> \
+>   -destkeystore wsmc-client.p12 -deststoretype PKCS12 -deststorepass <password> \
+>   -srcalias wsmc-client -destalias wsmc-client
+>
+> # Option B: convert to JKS (natively supported by Java 8, no legacy flag needed)
+> keytool -importkeystore \
+>   -srckeystore wsmc-client.p12 -srcstoretype PKCS12 -srcstorepass <password> \
+>   -destkeystore wsmc-client.jks -deststoretype JKS -deststorepass <password> \
+>   -srcalias wsmc-client -destalias wsmc-client
+> ```
+>
+> If you use JKS, point `keyStore` in `config/wsmc.properties` at the `.jks` file.
+
 ## Dependencies
+### Forge 1.12.2 (this Kotlin build)
+This build requires two extra mods installed alongside `wsmc`:
+
+* **MixinBooter** (`zone.rong:mixinbooter:11.0`) — the Mixin runtime (coremod) that applies this mod's mixins.
+* **Forgelin** (`io.github.chaosunity.forgelin:Forgelin-Continuous:2.3.0.0`) — the Kotlin runtime for Forge.
+
+Place all three jars (`wsmc`, `mixinbooter`, `forgelin`) into the `mods` folder. Without them the mixins are silently not applied, and joining a `ws://`/`wss://` server fails with "Can't resolve hostname".
+
+### Mixins are Java, not Kotlin (1.12.2 only)
+All `@Mixin` classes in this build (`wsmc/mixin/*`) are written in Java rather than Kotlin. Kotlin's `companion object` emits a `public static final Companion` field on the class, and Mixin 0.8.7's `validateField` check rejects non-private static fields in mixin classes with `contains non-private static field Companion`, which makes the mixin fail to apply (the server list shows "Can't resolve hostname").
+
+Injecting into static methods such as `ServerAddress.fromString` / `NetworkManager.createNetworkManagerAndConnect` requires the callback handler to be static, but Kotlin can only produce static methods via `companion object` + `@JvmStatic` — hence the conflict. The mixins are therefore implemented in Java, and `build.gradle.kts` uses `annotationProcessor(mixin)` so `compileJava` also runs the Mixin annotation processor to generate the refmap.
+
 ### Forge Version
 * `netty-codec-http` for handling HTTP and WebSocket
 

@@ -143,6 +143,9 @@ dependencies {
         }
         // mixin 注解处理器必须通过 kapt 运行，才能处理 Kotlin 里的 @Mixin 并生成 refmap
         kapt(mixin)
+        // mixin 类全部使用 Java 编写（Kotlin 的 companion object 会生成非 private 静态字段，
+        // 触发 Mixin 运行期的 validateField 校验失败），因此还需让 compileJava 也运行 Mixin AP。
+        annotationProcessor(mixin)
         // enableMixins 设置 refmap 名，并让 RFG 在检测到 kapt 插件后注入 -AreobfSrgFile/-AoutSrgFile/-AoutRefMapFile
         api(modUtils.enableMixins(mixin, "wsmc.refmap.json"))
     }
