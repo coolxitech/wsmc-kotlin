@@ -122,6 +122,13 @@ tasks.named('jar', Jar).configure {
 			"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
 		])
 	}
+	// Kotlin for Forge 6.0.0 是支持 Forge 1.21.11 的最后版本，其 kotlin-stdlib 为 2.2.20，
+	// 与本项目编译用的 Kotlin 2.4.20 不兼容，故将项目自带 stdlib 打入 jar 自包含。
+	from(configurations.runtimeClasspath.findAll { it.name.startsWith('kotlin-stdlib') }.collect { zipTree(it) }) {
+		exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
+		exclude 'META-INF/versions/**'
+		exclude 'module-info.class'
+	}
 	archiveClassifier = 'forge-slim'
 }
 

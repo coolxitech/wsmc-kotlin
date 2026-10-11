@@ -41,3 +41,10 @@ WebSocket wrapper for Minecraft Java
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
+
+[[dependencies.wsmc]]
+    modId="kotlinforforge"
+    type="required"
+    versionRange="${kotlinforforge_version_range}"
+    ordering="NONE"
+    side="BOTH"
