@@ -1,7 +1,7 @@
 {
 	"required": true,
 	"package": "wsmc.mixin",
-	"compatibilityLevel": "JAVA_21",
+	"compatibilityLevel": "JAVA_17",
 	"refmap": "wsmc.refmap.json",
 	"client": [
 		"MixinConnection",

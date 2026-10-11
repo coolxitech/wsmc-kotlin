@@ -7,7 +7,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent
 import wsmc.UnitTest
 import wsmc.WSMC
 
-@EventBusSubscriber(value = [Dist.CLIENT], modid = WSMC.MODID)
+@EventBusSubscriber(value = [Dist.CLIENT], modid = WSMC.MODID, bus = EventBusSubscriber.Bus.MOD)
 class ClientRegistrationHandler {
     companion object {
         @JvmStatic

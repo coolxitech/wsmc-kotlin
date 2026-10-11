@@ -25,6 +25,9 @@ dependencies {
 
 	// javax.annotation.Nullable
 	modImplementation 'com.google.code.findbugs:jsr305:3.0.1'
+
+	// Netty's http and websocket support
+	include(modImplementation(group: 'io.netty', name: 'netty-codec-http', version: project.netty_version))
 }
 
 
