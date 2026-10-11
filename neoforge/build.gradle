@@ -81,8 +81,17 @@ sourceSets {
 	}
 }
 
+repositories {
+	maven {
+		name = 'KotlinForForge'
+		url = 'https://thedarkcolour.github.io/KotlinForForge/'
+	}
+}
+
 dependencies {
 	implementation "net.neoforged:neoforge:${neo_version}"
+	// Kotlin for Forge (NeoForge 版) 提供 kotlin-stdlib 等运行时
+	implementation "thedarkcolour:kotlinforforge-neoforge:${kotlinforforge_version}"
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

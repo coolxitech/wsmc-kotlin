@@ -7,9 +7,10 @@ import org.spongepowered.asm.mixin.Final
 import org.spongepowered.asm.mixin.Mixin
 import org.spongepowered.asm.mixin.Shadow
 import org.spongepowered.asm.mixin.Unique
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation
 import org.spongepowered.asm.mixin.injection.At
 import org.spongepowered.asm.mixin.injection.Inject
-import org.spongepowered.asm.mixin.injection.Redirect
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 import wsmc.IWebSocketServerAddress
@@ -86,7 +87,7 @@ class MixinServerAddress : IWebSocketServerAddress {
 
     private companion object {
         @JvmStatic
-        @Redirect(
+        @WrapOperation(
             method = ["<init>(Ljava/lang/String;I)V"],
             at = [At(
                 value = "INVOKE",
@@ -94,12 +95,12 @@ class MixinServerAddress : IWebSocketServerAddress {
             )],
             require = 1
         )
-        private fun parseWebSocketUriForConstructor(host: String, port: Int): HostAndPort {
+        private fun parseWebSocketUriForConstructor(host: String, port: Int, original: Operation<HostAndPort>): HostAndPort {
             val connInfo = WebSocketConnectionInfo.parseUri(host)
             if (connInfo != null) {
                 return HostAndPort.fromParts(connInfo.uri.host!!, connInfo.uri.port)
             }
-            return HostAndPort.fromParts(host, port)
+            return original.call(host, port)
         }
 
         @JvmStatic

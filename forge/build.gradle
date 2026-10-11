@@ -130,6 +130,12 @@ tasks.named('jar', Jar).configure {
 		])
 	}
 
+	// Kotlin for Forge 尚无 MC 26.x 版本，将 kotlin-stdlib 打入 jar 实现自包含运行时
+	from(configurations.runtimeClasspath.findAll { it.name.startsWith('kotlin-stdlib') }.collect { zipTree(it) }) {
+		exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
+		exclude 'META-INF/versions/**'
+		exclude 'module-info.class'
+	}
 }
 jar.archiveClassifier.set("forge-${project.minecraft_version}")
 
