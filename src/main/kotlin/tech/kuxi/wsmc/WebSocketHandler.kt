@@ -1,4 +1,4 @@
-package wsmc
+package tech.kuxi.wsmc
 
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelDuplexHandler
