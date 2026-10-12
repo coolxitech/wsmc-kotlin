@@ -1,20 +1,24 @@
-# WSMC
+# WSMC-Kotlin
 
 [![Release](https://img.shields.io/github/v/release/coolxitech/wsmc-kotlin?style=flat-square&label=release)](https://github.com/coolxitech/wsmc-kotlin/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/coolxitech/wsmc-kotlin/total?style=flat-square&logo=github)](https://github.com/coolxitech/wsmc-kotlin/releases)
 
-为 Minecraft Java 启用 WebSocket 支持。
-此模组允许客户端使用 WebSocket URI 加入支持 WebSocket 的 Minecraft 服务器，同时也保留原版 TCP 语法。
+WSMC-Kotlin 是 [WSMC](https://github.com/rikka0w0/wsmc) 的 Kotlin 移植版，为 Minecraft Java（客户端）启用 WebSocket 支持。
 
-适用于 Minecraft Forge、Neoforge 和 Fabric：
-* 26.1, 26.1.1, 26.1.2, 26.2
-* 1.21.11
-* 1.20.5 到 1.21.4，包括。1.21.5 到 1.21.10 已知可正常工作。
-* 1.20.2、1.20.3、1.20.4
-* 1.20.1
-* 1.18.2、1.19.x、1.20
+此客户端模组允许使用 WebSocket URI（`ws://` 或 `wss://`）加入支持 WebSocket 的 Minecraft 服务器，同时保留原版 TCP 语法。
 
-此分支用于 26.1 和 26.2，截至 2026/06/26。
+每个 Minecraft 版本系列对应一个独立分支：
+
+| 分支 | Minecraft | 加载器 |
+| --- | --- | --- |
+| `main` | 26.1, 26.1.1, 26.1.2, 26.2, 26.3 | Forge、NeoForge、Fabric |
+| `mc/1.21.11` | 1.21.11 | Forge、NeoForge、Fabric |
+| `mc/1.20.5` | 1.20.5 至 1.21.10 | Forge、NeoForge、Fabric |
+| `mc/1.20.2` | 1.20.2、1.20.3、1.20.4 | Forge、NeoForge、Fabric |
+| `mc/1.20.1` | 1.20.1 | Forge、Fabric |
+| `mc/1.20` | 1.18.2 至 1.20 | Forge、Fabric |
+| `mc/1.19.2` | 1.19.2 | Forge、Fabric |
+| `mc/1.12.2` | 1.12.2 | Forge |
 
 此模组独立运行，没有任何依赖项。
 
@@ -88,12 +92,61 @@ keyStorePassword=changeit
 # keyStoreType=PKCS12
 ```
 
+> **1.12.2 / Java 8 注意**：Forge 1.12.2 客户端运行在 Java 8 上，无法解析 JDK 9+ `keytool` 默认生成的 PBES2 加密 PKCS12（加载时会抛 `parseAlgParameters failed: ObjectIdentifier() -- data isn't an object ID`）。客户端证书必须用旧算法生成或转换，例如：
+>
+> ```bash
+> # 方案 A：把现有 p12 重新封装为旧算法（需 JDK 9+ 的 keytool）。
+> # 通过 JAVA_TOOL_OPTIONS 环境变量传入属性；`keytool -J-Dkeystore.pkcs12.legacy` 会被当作 unknown option。
+> export JAVA_TOOL_OPTIONS='-Dkeystore.pkcs12.legacy'   # PowerShell：$env:JAVA_TOOL_OPTIONS='-Dkeystore.pkcs12.legacy'
+> keytool -importkeystore \
+>   -srckeystore wsmc-client.p12 -srcstoretype PKCS12 -srcstorepass <密码> \
+>   -destkeystore wsmc-client.p12 -deststoretype PKCS12 -deststorepass <密码> \
+>   -srcalias wsmc-client -destalias wsmc-client
+>
+> # 方案 B：转成 JKS（Java 8 原生支持，无需旧算法属性）
+> keytool -importkeystore \
+>   -srckeystore wsmc-client.p12 -srcstoretype PKCS12 -srcstorepass <密码> \
+>   -destkeystore wsmc-client.jks -deststoretype JKS -deststorepass <密码> \
+>   -srcalias wsmc-client -destalias wsmc-client
+>
+> # 方案 C：用 openssl 从 PEM 生成，强制使用旧算法
+> # （如无 CA 链可省略 -certfile ca.crt）
+> openssl pkcs12 -export \
+>   -out wsmc-client.p12 \
+>   -inkey client.key \
+>   -in client.crt \
+>   -certfile ca.crt \
+>   -name wsmc-client \
+>   -keypbe PBE-SHA1-3DES -certpbe PBE-SHA1-3DES -macalg sha1 \
+>   -passout pass:<密码>
+> ```
+>
+> 如果使用 JKS，请在 `config/wsmc.properties` 里把 `keyStore` 指向 `.jks` 文件。
+
 ## 依赖项
 ### Forge 版本
-* `netty-codec-http` 用于处理 HTTP 和 WebSocket
+* `netty-codec-http` 用于处理 HTTP 和 WebSocket。
+* Kotlin 标准库已打包进 jar（自包含），无需额外安装 Kotlin 模组。
+
+### NeoForge 版本
+* [Kotlin for Forge](https://github.com/thedarkcolour/KotlinForForge)（`kotlinforforge`，>= 6.4.0）—— 运行时提供 Kotlin 标准库。
 
 ### Fabric 版本
-您需要安装 Fabric Loader，然后安装此模组。Fabric API 是可选的但强烈推荐。
+* 需要先安装 Fabric Loader，再安装本模组。Fabric API 可选，但强烈推荐。
+* [Fabric Language Kotlin](https://github.com/FabricMC/fabric-language-kotlin)（`fabric-language-kotlin`，>= 1.14.1）—— 运行时提供 Kotlin 标准库。
+
+### Forge 1.12.2（旧 `mc/1.12.2` 分支）
+此构建需要在 `wsmc` 之外额外安装两个前置模组：
+
+* **MixinBooter**（`zone.rong:mixinbooter:11.0`）—— Mixin 运行时（coremod），用于应用本模组的 mixin。
+* **Forgelin**（`io.github.chaosunity.forgelin:Forgelin-Continuous:2.3.0.0`）—— Forge 的 Kotlin 运行时。
+
+请将三个 jar（`wsmc`、`mixinbooter`、`forgelin`）一起放入 `mods` 文件夹。缺少它们时 mixin 会被静默跳过，加入 `ws://`/`wss://` 服务器会失败并提示"无法解析主机名"。
+
+### Mixin 类使用 Java 而非 Kotlin（仅 1.12.2）
+本构建的所有 `@Mixin` 类（`wsmc/mixin/*`）都用 Java 编写，而非 Kotlin。原因是 Kotlin 的 `companion object` 会在类里生成一个 `public static final Companion` 字段，而 Mixin 0.8.7 的 `validateField` 校验会拒绝 mixin 类中的非 private 静态字段，报错 `contains non-private static field Companion`，导致 mixin 应用失败（表现为服务器列表显示"无法解析主机名"）。
+
+注入 `ServerAddress.fromString` / `NetworkManager.createNetworkManagerAndConnect` 这类静态方法时，Mixin 又要求回调处理器必须是 static；Kotlin 只能通过 `companion object` + `@JvmStatic` 生成静态方法，二者冲突。因此这些 mixin 统一用 Java 实现，`build.gradle.kts` 通过 `annotationProcessor(mixin)` 让 `compileJava` 也运行 Mixin 注解处理器生成 refmap。
 
 ## 对于开发者
 要修改和调试代码，首先在 Eclipse IDE 中将"forge"或"fabric"文件夹作为 Gradle 项目导入，然后运行 gradle 任务 `genEclipseRuns`。
