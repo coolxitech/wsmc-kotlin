@@ -55,10 +55,11 @@ jobs:
         with:
           ref: ${{ github.event.inputs.ref || github.ref }}
 
-      - name: Set up JDK ${{ env.java-version }}
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ env.java-version }}
+          # NeoForge (Gradle 8.10.2) cannot run on Java 25; use Java 21 there.
+          java-version: ${{ matrix.loader == 'neoforge' && '21' || env.java-version }}
           distribution: temurin
 
       - name: Set up Gradle
