@@ -1,4 +1,4 @@
-package wsmc
+package tech.kuxi.wsmc
 
 import net.minecraft.client.multiplayer.resolver.ServerAddress
 
