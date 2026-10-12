@@ -1,0 +1,112 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+env:
+  java-version: '25'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.loader }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        loader: [fabric, neoforge, forge]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.java-version }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.java-version }}
+          distribution: temurin
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          build-root-directory: ${{ matrix.loader }}
+
+      - name: Build
+        run: |
+          cd "${{ matrix.loader }}"
+          chmod +x ./gradlew
+          ./gradlew build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.loader }}
+          path: |
+            ${{ matrix.loader }}/build/libs/*.jar
+            !${{ matrix.loader }}/build/libs/*-sources.jar
+            !${{ matrix.loader }}/build/libs/*-dev.jar
+            !${{ matrix.loader }}/build/libs/*-javadoc.jar
+            !${{ matrix.loader }}/build/libs/*-slim.jar
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Resolve release metadata
+        id: meta
+        run: |
+          mod_version=$(grep -E '^[[:space:]]*mod_version[[:space:]]*=' common.properties | sed -E 's/^[[:space:]]*mod_version[[:space:]]*=[[:space:]]*//; s/[[:space:]]+$//')
+          mc_version=$(grep -E '^[[:space:]]*minecraft_version[[:space:]]*=' common.properties | sed -E 's/^[[:space:]]*minecraft_version[[:space:]]*=[[:space:]]*//; s/[[:space:]]+$//')
+
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            tag_name="${{ github.ref_name }}"
+          else
+            tag_name="v${mod_version}"
+          fi
+
+          {
+            echo "mod_version=${mod_version}"
+            echo "mc_version=${mc_version}"
+            echo "tag_name=${tag_name}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Generate SHA256SUMS
+        run: |
+          cd dist
+          sha256sum ./* > SHA256SUMS
+
+      - name: Generate release body
+        run: |
+          mod_version="${{ steps.meta.outputs.mod_version }}"
+          mc_version="${{ steps.meta.outputs.mc_version }}"
+          sed -e "s/MOD_VERSION/${mod_version}/g" -e "s/MC_VERSION/${mc_version}/g" .github/release_template.md > release_body.md
+          {
+            echo
+            echo '---'
+            echo
+            cat CHANGELOG.txt
+          } >> release_body.md
+
+      - name: Publish to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.tag_name }}
+          body_path: release_body.md
+          files: dist/*
+          draft: false
+          prerelease: false

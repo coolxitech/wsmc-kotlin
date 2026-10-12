@@ -1,5 +1,8 @@
 # WSMC
 
+[![Release](https://img.shields.io/github/v/release/coolxitech/wsmc-kotlin?style=flat-square&label=release)](https://github.com/coolxitech/wsmc-kotlin/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/coolxitech/wsmc-kotlin/total?style=flat-square&logo=github)](https://github.com/coolxitech/wsmc-kotlin/releases)
+
 为 Minecraft Java 启用 WebSocket 支持。
 此模组允许客户端使用 WebSocket URI 加入支持 WebSocket 的 Minecraft 服务器，同时也保留原版 TCP 语法。
 
@@ -14,6 +17,16 @@
 此分支用于 26.1 和 26.2，截至 2026/06/26。
 
 此模组独立运行，没有任何依赖项。
+
+## 下载
+
+从 [GitHub Releases](https://github.com/coolxitech/wsmc-kotlin/releases/latest) 下载最新版本，按你的 Mod 加载器选择对应的 jar：
+
+| 加载器 | 产物 |
+| --- | --- |
+| Forge | `wsmc-<version>-forge-<mc>.jar` |
+| NeoForge | `wsmc-<version>-neoforge-<mc>.jar` |
+| Fabric | `wsmc-<version>-fabric-<mc>.jar`（需 Fabric Loader） |
 
 ## 当此模组安装在客户端时：
 * 客户端可以使用类似 `ws://hostname.com:port/path_to_minecraft_endpoint` 的 URI 加入支持 WebSocket 的服务器。

@@ -1,4 +1,8 @@
 # WSMC
+
+[![Release](https://img.shields.io/github/v/release/coolxitech/wsmc-kotlin?style=flat-square&label=release)](https://github.com/coolxitech/wsmc-kotlin/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/coolxitech/wsmc-kotlin/total?style=flat-square&logo=github)](https://github.com/coolxitech/wsmc-kotlin/releases)
+
 [中文介绍](README_zh.md)
 
 Enable WebSocket support for Minecraft Java (client side).
@@ -16,6 +20,16 @@ For Minecraft Forge, Neoforge and Fabric:
 This branch is for 26.1 and 26.2 as of 2026/06/26.
 
 This mod runs standalone and does not have any dependency.
+
+## Download
+
+Get the latest release from [GitHub Releases](https://github.com/coolxitech/wsmc-kotlin/releases/latest) and pick the jar for your mod loader:
+
+| Loader | Artifact |
+| --- | --- |
+| Forge | `wsmc-<version>-forge-<mc>.jar` |
+| NeoForge | `wsmc-<version>-neoforge-<mc>.jar` |
+| Fabric | `wsmc-<version>-fabric-<mc>.jar` (requires Fabric Loader) |
 
 ## When this mod is installed on a client:
 * The client can join WebSocket-enabled servers using URI like `ws://hostname.com:port/path_to_minecraft_endpoint`.
