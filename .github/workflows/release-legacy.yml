@@ -1,0 +1,115 @@
+name: Build and Release (Legacy 1.12.2)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch to build'
+        required: false
+        default: 'mc/1.12.2'
+
+env:
+  java-version: '21'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build 1.12.2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || 'mc/1.12.2' }}
+
+      - name: Set up JDK ${{ env.java-version }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.java-version }}
+          distribution: temurin
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: legacy
+          path: |
+            build/libs/*.jar
+            !build/libs/*-sources.jar
+            !build/libs/*-dev.jar
+            !build/libs/*-javadoc.jar
+            !build/libs/*-slim.jar
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || 'mc/1.12.2' }}
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: legacy
+          path: dist
+
+      - name: Resolve release metadata
+        id: meta
+        run: |
+          mod_version=$(grep -E '^[[:space:]]*mod_version[[:space:]]*=' gradle.properties | sed -E 's/^[[:space:]]*mod_version[[:space:]]*=[[:space:]]*//; s/[[:space:]]+$//')
+          mc_version="1.12.2"
+          tag_name="v${mod_version}-mc${mc_version}"
+          echo "mod_version=${mod_version}" >> "$GITHUB_OUTPUT"
+          echo "mc_version=${mc_version}" >> "$GITHUB_OUTPUT"
+          echo "tag_name=${tag_name}" >> "$GITHUB_OUTPUT"
+
+      - name: Generate SHA256SUMS
+        run: |
+          cd dist
+          sha256sum ./* > SHA256SUMS
+
+      - name: Generate release body
+        run: |
+          tag="${{ steps.meta.outputs.tag_name }}"
+          mod="${{ steps.meta.outputs.mod_version }}"
+          mc="${{ steps.meta.outputs.mc_version }}"
+          url="https://github.com/coolxitech/wsmc-kotlin/releases/download/${tag}/wsmc-${mod}.jar"
+          {
+            echo '<div align="center">'
+            echo
+            echo "[![Release Downloads](https://img.shields.io/github/downloads/coolxitech/wsmc-kotlin/${tag}/total?style=flat-square&logo=github)](https://github.com/coolxitech/wsmc-kotlin/releases/${tag})"
+            echo
+            echo '</div>'
+            echo
+            echo '**Download:**'
+            echo
+            echo '| Loader | Download |'
+            echo '| --- | --- |'
+            echo "| Forge ${mc} | <a href=\"${url}\"><img src=\"https://img.shields.io/badge/Forge-${mc}-8B1E1E.svg\"></a> <a href=\"https://gh-proxy.com/${url}\"><img src=\"https://img.shields.io/badge/Mirror-gh--proxy-0366d6.svg\"></a> |"
+            echo
+            echo '---'
+            echo
+            cat CHANGELOG.txt
+          } > release_body.md
+
+      - name: Publish to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.tag_name }}
+          body_path: release_body.md
+          files: dist/*
+          draft: false
+          prerelease: false
