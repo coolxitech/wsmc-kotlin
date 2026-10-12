@@ -1,4 +1,4 @@
-name: Build and Release (Legacy 1.12.2)
+name: Build and Release Legacy 1.12.2
 
 on:
   push:
