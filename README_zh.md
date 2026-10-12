@@ -157,8 +157,8 @@ Windows 用户需要用 `.\` 和 `..\` 分别替换 `./` 和 `../`。
 
 ### 编译 Fabric 构件
 ```
-git clone https://github.com/rikka0w0/wsmc.git
-cd wsmc/fabric
+git clone https://github.com/coolxitech/wsmc-kotlin.git
+cd wsmc-kotlin/fabric
 ./gradlew build
 ```
 
@@ -179,8 +179,8 @@ cd wsmc/fabric
 
 ### 编译 Forge 构件
 ```
-git clone https://github.com/rikka0w0/wsmc.git
-cd wsmc/forge
+git clone https://github.com/coolxitech/wsmc-kotlin.git
+cd wsmc-kotlin/forge
 ./gradlew build
 ```
 
