@@ -1,4 +1,4 @@
-package wsmc.client
+package tech.kuxi.wsmc.client
 
 import io.netty.buffer.ByteBufAllocator
 import io.netty.channel.Channel
@@ -21,10 +21,10 @@ import io.netty.handler.ssl.SslContextBuilder
 import io.netty.handler.ssl.SslHandler
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory
 import io.netty.util.CharsetUtil
-import wsmc.IWebSocketServerAddress
-import wsmc.WSMC
-import wsmc.WebSocketConnectionInfo
-import wsmc.WebSocketHandler
+import tech.kuxi.wsmc.IWebSocketServerAddress
+import tech.kuxi.wsmc.WSMC
+import tech.kuxi.wsmc.WebSocketConnectionInfo
+import tech.kuxi.wsmc.WebSocketHandler
 import java.io.File
 import java.io.FileInputStream
 import java.net.URI
