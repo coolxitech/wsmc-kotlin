@@ -161,8 +161,8 @@ The codebase uses Minecraft official mapping.
 
 ### Compile Fabric artifact
 ```
-git clone https://github.com/rikka0w0/wsmc.git
-cd wsmc/fabric
+git clone https://github.com/coolxitech/wsmc-kotlin.git
+cd wsmc-kotlin/fabric
 ./gradlew build
 ```
 
@@ -183,8 +183,8 @@ To debug in Fabric, one may need to create `run/config/fabric_loader_dependencie
 
 ### Compile Forge artifact
 ```
-git clone https://github.com/rikka0w0/wsmc.git
-cd wsmc/forge
+git clone https://github.com/coolxitech/wsmc-kotlin.git
+cd wsmc-kotlin/forge
 ./gradlew build
 ```
 
