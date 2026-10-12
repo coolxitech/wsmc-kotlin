@@ -1,4 +1,4 @@
-package wsmc;
+package tech.kuxi.wsmc;
 
 import net.minecraftforge.fml.common.Mod;
 

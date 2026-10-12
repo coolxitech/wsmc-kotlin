@@ -1,4 +1,4 @@
-package wsmc.mixin;
+package tech.kuxi.wsmc.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import net.minecraft.client.multiplayer.ServerAddress;
-import wsmc.IWebSocketServerAddress;
-import wsmc.WebSocketConnectionInfo;
+import tech.kuxi.wsmc.IWebSocketServerAddress;
+import tech.kuxi.wsmc.WebSocketConnectionInfo;
 
 @Mixin(ServerAddress.class)
 public abstract class MixinServerAddress implements IWebSocketServerAddress {

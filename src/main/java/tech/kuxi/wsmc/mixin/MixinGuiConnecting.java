@@ -1,4 +1,4 @@
-package wsmc.mixin;
+package tech.kuxi.wsmc.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 
@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerAddress;
 import net.minecraft.client.multiplayer.ServerData;
-import wsmc.IWsServerAddressHolder;
+import tech.kuxi.wsmc.IWsServerAddressHolder;
 
 @Mixin(GuiConnecting.class)
 public class MixinGuiConnecting implements IWsServerAddressHolder {

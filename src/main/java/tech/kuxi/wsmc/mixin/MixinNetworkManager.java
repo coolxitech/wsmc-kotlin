@@ -1,4 +1,4 @@
-package wsmc.mixin;
+package tech.kuxi.wsmc.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 
@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import net.minecraft.network.NetworkManager;
-import wsmc.IConnectionEx;
-import wsmc.IWebSocketServerAddress;
+import tech.kuxi.wsmc.IConnectionEx;
+import tech.kuxi.wsmc.IWebSocketServerAddress;
 
 @Mixin(NetworkManager.class)
 public class MixinNetworkManager implements IConnectionEx {

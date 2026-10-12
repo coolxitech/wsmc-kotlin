@@ -1,4 +1,4 @@
-package wsmc.mixin;
+package tech.kuxi.wsmc.mixin;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -9,9 +9,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerAddress;
-import wsmc.IConnectionEx;
-import wsmc.IWebSocketServerAddress;
-import wsmc.IWsServerAddressHolder;
+import tech.kuxi.wsmc.IConnectionEx;
+import tech.kuxi.wsmc.IWebSocketServerAddress;
+import tech.kuxi.wsmc.IWsServerAddressHolder;
 
 @Mixin(targets = "net.minecraft.client.multiplayer.GuiConnecting$1")
 public class MixinGuiConnectingThread {

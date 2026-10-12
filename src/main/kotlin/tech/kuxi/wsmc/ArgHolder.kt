@@ -1,4 +1,4 @@
-package wsmc
+package tech.kuxi.wsmc
 
 class ArgHolder<T> private constructor(private val nullable: Boolean) {
     private val wsAddress = ThreadLocal.withInitial<T?> { null }

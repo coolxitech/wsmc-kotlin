@@ -1,4 +1,4 @@
-package wsmc.mixin;
+package tech.kuxi.wsmc.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 
@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import io.netty.channel.Channel;
 import net.minecraft.network.NetworkManager;
-import wsmc.IConnectionEx;
-import wsmc.client.WebSocketClientHandler;
+import tech.kuxi.wsmc.IConnectionEx;
+import tech.kuxi.wsmc.client.WebSocketClientHandler;
 
 /**
  * This Mixin patches the {@link io.netty.channel.ChannelInitializer} inner class

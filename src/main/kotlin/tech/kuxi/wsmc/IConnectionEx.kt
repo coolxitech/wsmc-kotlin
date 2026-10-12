@@ -1,4 +1,4 @@
-package wsmc
+package tech.kuxi.wsmc
 
 interface IConnectionEx {
     fun getWsInfo(): IWebSocketServerAddress?

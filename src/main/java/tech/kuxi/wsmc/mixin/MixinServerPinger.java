@@ -1,4 +1,4 @@
-package wsmc.mixin;
+package tech.kuxi.wsmc.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 
@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.client.multiplayer.ServerAddress;
 import net.minecraft.client.network.ServerPinger;
-import wsmc.IConnectionEx;
-import wsmc.IWebSocketServerAddress;
+import tech.kuxi.wsmc.IConnectionEx;
+import tech.kuxi.wsmc.IWebSocketServerAddress;
 
 @Mixin(ServerPinger.class)
 public class MixinServerPinger {

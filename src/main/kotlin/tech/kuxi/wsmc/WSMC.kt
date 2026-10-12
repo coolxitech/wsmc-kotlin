@@ -1,4 +1,4 @@
-package wsmc
+package tech.kuxi.wsmc
 
 object WSMC {
     const val MODID = "wsmc"
