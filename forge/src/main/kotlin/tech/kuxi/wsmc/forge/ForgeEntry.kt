@@ -1,7 +1,7 @@
-package wsmc.forge
+package tech.kuxi.wsmc.forge
 
 import net.minecraftforge.fml.common.Mod
-import wsmc.WSMC
+import tech.kuxi.wsmc.WSMC
 
 @Mod(WSMC.MODID)
 class ForgeEntry {
@@ -9,7 +9,7 @@ class ForgeEntry {
         if (instance == null) {
             instance = this
         } else {
-            throw RuntimeException("Duplicated Class Instantiation: wsmc.forge.ForgeEntry")
+            throw RuntimeException("Duplicated Class Instantiation: tech.kuxi.wsmc.forge.ForgeEntry")
         }
     }
 

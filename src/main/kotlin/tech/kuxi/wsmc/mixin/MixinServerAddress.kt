@@ -1,4 +1,4 @@
-package wsmc.mixin
+package tech.kuxi.wsmc.mixin
 
 import com.google.common.net.HostAndPort
 import net.minecraft.client.multiplayer.resolver.ServerAddress
@@ -13,8 +13,8 @@ import org.spongepowered.asm.mixin.injection.At
 import org.spongepowered.asm.mixin.injection.Inject
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
-import wsmc.IWebSocketServerAddress
-import wsmc.WebSocketConnectionInfo
+import tech.kuxi.wsmc.IWebSocketServerAddress
+import tech.kuxi.wsmc.WebSocketConnectionInfo
 
 @Debug(export = true)
 @Mixin(ServerAddress::class)

@@ -1,7 +1,7 @@
-package wsmc.neoforge
+package tech.kuxi.wsmc.neoforge
 
 import net.neoforged.fml.common.Mod
-import wsmc.WSMC
+import tech.kuxi.wsmc.WSMC
 
 @Mod(WSMC.MODID)
 class NeoforgeEntry
