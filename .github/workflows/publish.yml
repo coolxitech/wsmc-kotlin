@@ -27,6 +27,15 @@ jobs:
         java-version: ${{ env.java-version }}
         distribution: 'temurin'
 
+    - name: Ensure Modrinth project exists
+      env:
+        MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+      run: |
+        curl -sS -X POST https://api.modrinth.com/v2/project \
+          -H "Authorization: $MODRINTH_TOKEN" \
+          -H "Content-Type: application/json" \
+          -d '{"slug":"wsmc-kotlin","title":"WSMC-Kotlin","description":"WebSocket support for Minecraft Java (client side). Kotlin rewrite of WSMC, for Forge / NeoForge / Fabric.","license_id":"LicenseRef-All-Rights-Reserved","categories":["forge","fabric","neoforge","utility"],"client_side":"required","server_side":"unsupported","project_type":"mod","source_url":"https://github.com/coolxitech/wsmc-kotlin","issues_url":"https://github.com/coolxitech/wsmc-kotlin/issues","requested_status":"approved"}' || true
+
     - name: Build Fabric
       run: |
         cd fabric
@@ -165,3 +174,24 @@ jobs:
         version-type: beta
         files: forge/build/libs/!(*-@(dev|sources|javadoc|slim)).jar
         java: Java ${{ env.java-version }}
+
+    - name: Publish to Modrinth (Fabric)
+      env:
+        MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+      run: |
+        cd fabric
+        ./gradlew modrinth
+
+    - name: Publish to Modrinth (NeoForge)
+      env:
+        MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+      run: |
+        cd neoforge
+        ./gradlew modrinth
+
+    - name: Publish to Modrinth (Forge)
+      env:
+        MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+      run: |
+        cd forge
+        ./gradlew modrinth
