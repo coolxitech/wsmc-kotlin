@@ -23,7 +23,7 @@ class MixinConnection : IConnectionEx {
         this.wsInfo = wsInfo
     }
 
-    companion object {
+    private companion object {
         /*
          * Prior to the invocation of connectToServer(), call [ArgHolder.push]
          * to get the ServerAddress-sensitive(IWebSocketServerAddress) version of connectToServer().
@@ -37,7 +37,7 @@ class MixinConnection : IConnectionEx {
                 target = "()Lio/netty/bootstrap/Bootstrap;"
             )]
         )
-        fun beforeCallConnect(
+        private fun beforeCallConnect(
             callback: CallbackInfoReturnable<Connection>,
             @Local(ordinal = 0, argsOnly = false) connection: Connection
         ) {
