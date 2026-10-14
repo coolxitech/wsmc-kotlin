@@ -7,6 +7,7 @@ plugins {
 	id 'net.minecraftforge.gradle' version '[7.0.11,8.0)'
 	id 'net.minecraftforge.jarjar' version '0.2.3'
 	id 'net.minecraftforge.renamer' version '1.0.14'
+	id 'com.modrinth.minotaur' version '2.+'
 }
 
 apply from: '../common.gradle'
@@ -171,4 +172,16 @@ sourceSets.each {
 	it.output.resourcesDir = dir
 	it.java.destinationDirectory = dir
 	it.kotlin.destinationDirectory = dir
+}
+
+modrinth {
+	token = System.getenv("MODRINTH_TOKEN")
+	projectId = "wsmc-kotlin"
+	versionNumber = "${project.mod_version}-mc${project.minecraft_version}+forge"
+	versionName = "WSMC ${project.mod_version} for Forge ${project.minecraft_version}"
+	versionType = "release"
+	uploadFile = tasks.jarJar
+	gameVersions = project.minecraft_versions_supported
+	loaders = ["forge"]
+	changelog = file("../CHANGELOG.txt").text
 }
