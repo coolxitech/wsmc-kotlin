@@ -20,7 +20,7 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v7
       with:
         submodules: true
 
@@ -118,7 +118,7 @@ jobs:
         set_action_env "MC_RANGE_FORGE" "${minecraft_version_range}"
 
     - name: Publish to GitHub
-      uses: Kir-Antipov/mc-publish@v3.3
+      uses: Kir-Antipov/mc-publish@v3.3.1
       with:
         name: ${{ env.GITHUB_RELEASE_TITLE }}
         changelog-file: CHANGELOG.txt
@@ -136,7 +136,7 @@ jobs:
           fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
 
     - name: Publish to CurseForge (Fabric version)
-      uses: Kir-Antipov/mc-publish@v3.3
+      uses: Kir-Antipov/mc-publish@v3.3.1
       with:
         changelog-file: CHANGELOG.txt
         # Only include this section if you wish to publish your assets on CurseForge.
@@ -150,7 +150,7 @@ jobs:
         java: Java ${{ env.java-version }}
 
     - name: Publish to CurseForge (Neoforge version)
-      uses: Kir-Antipov/mc-publish@v3.3
+      uses: Kir-Antipov/mc-publish@v3.3.1
       with:
         changelog-file: CHANGELOG.txt
         # Only include this section if you wish to publish your assets on CurseForge.
@@ -165,7 +165,7 @@ jobs:
         java: Java ${{ env.java-version }}
 
     - name: Publish to CurseForge (Forge version)
-      uses: Kir-Antipov/mc-publish@v3.3
+      uses: Kir-Antipov/mc-publish@v3.3.1
       with:
         changelog-file: CHANGELOG.txt
         # Only include this section if you wish to publish your assets on CurseForge.
