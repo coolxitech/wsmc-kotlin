@@ -1,32 +1,23 @@
 package tech.kuxi.wsmc
 
 import com.google.common.base.Objects
-import net.minecraft.client.multiplayer.resolver.ServerAddress
 import java.net.IDN
 import java.net.URI
 import java.net.URISyntaxException
 
 /**
- * This class defines additional information added to the vanilla [ServerAddress].
+ * This record-like class defines additional information added to the vanilla
+ * [net.minecraft.client.multiplayer.resolver.ServerAddress].
  *
- * You are not supposed to compare two [WebSocketConnectionInfo] instances directly.
- *
- * Compare vanilla [ServerAddress] instances instead.
- *
- * Both vanilla [ServerAddress] and this class are immutable.
+ * Both vanilla [net.minecraft.client.multiplayer.resolver.ServerAddress] and this class are immutable.
  */
 class WebSocketConnectionInfo private constructor(
-    val owner: ServerAddress,
     val uri: URI,
     val sni: String?,
     val httpHostname: String?
 ) {
     /**
      * Compare URI components, sni and httpHostname.
-     *
-     * Does not check the owner ([ServerAddress]).
-     *
-     * Vanilla ServerAddress checks Host and port.
      */
     fun equalTo(that: WebSocketConnectionInfo?): Boolean {
         if (that == null) return false
@@ -39,24 +30,10 @@ class WebSocketConnectionInfo private constructor(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is WebSocketConnectionInfo) return false
-
-        // Check vanilla fields
-        if (IWebSocketServerAddress.from(this.owner).getRawHost() != IWebSocketServerAddress.from(other.owner).getRawHost())
-            return false
-
-        if (this.owner.port != other.owner.port)
-            return false
-
         return this.equalTo(other)
     }
 
-    override fun hashCode(): Int = Objects.hashCode(
-        this.owner.port,
-        IWebSocketServerAddress.from(this.owner).getRawHost(),
-        this.uri,
-        this.sni,
-        this.httpHostname
-    )
+    override fun hashCode(): Int = Objects.hashCode(this.uri, this.sni, this.httpHostname)
 
     override fun toString(): String =
         this.uri.toString() + "\n" +
@@ -75,7 +52,9 @@ class WebSocketConnectionInfo private constructor(
          * @return null if uriString is not a valid WebSocket Uri (including vanilla TCP).
          */
         @JvmStatic
-        fun fromWsUri(uriString: String): ServerAddress? {
+        fun parseUri(uriString: String?): WebSocketConnectionInfo? {
+            if (uriString == null) return null
+
             try {
                 var uri = URI(uriString)
 
@@ -140,10 +119,8 @@ class WebSocketConnectionInfo private constructor(
 
                 uri = URI(scheme, null, hostname, port, path, uri.query, uri.fragment)
 
-                val result = ServerAddress(hostname, port)
-                val connInfo = WebSocketConnectionInfo(result, uri, sni, hostnameInHeader)
-                (result as Any as IWebSocketServerAddress).setWsConnectionInfo(connInfo)
-                return result
+                return WebSocketConnectionInfo(uri, sni, hostnameInHeader)
+            } catch (e: IllegalArgumentException) {
             } catch (e: URISyntaxException) {
             }
 

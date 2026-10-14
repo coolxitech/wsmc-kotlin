@@ -4,10 +4,10 @@ import com.llamalad7.mixinextras.sugar.Local
 import net.minecraft.client.gui.screens.ConnectScreen
 import net.minecraft.client.multiplayer.resolver.ServerAddress
 import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.spongepowered.asm.mixin.Debug
-import org.spongepowered.asm.mixin.Final
 import org.spongepowered.asm.mixin.Mixin
-import org.spongepowered.asm.mixin.Shadow
+import org.spongepowered.asm.mixin.Unique
 import org.spongepowered.asm.mixin.injection.At
 import org.spongepowered.asm.mixin.injection.Inject
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
@@ -26,10 +26,8 @@ class MixinConnectScreen {
         }
     }
 
-    companion object {
-        @JvmField
-        @field:Shadow
-        @field:Final
-        val LOGGER: Logger = null as Logger
+    private companion object {
+        @field:Unique
+        private val LOGGER: Logger = LoggerFactory.getLogger("wsmc")
     }
 }
