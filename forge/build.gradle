@@ -5,6 +5,7 @@ plugins {
 	id 'maven-publish'
 	id 'org.jetbrains.kotlin.jvm' version '2.4.20'
 	id 'net.minecraftforge.gradle' version '[7.0.17,8)'
+	id 'com.modrinth.minotaur' version '2.+'
 }
 
 apply from: '../common.gradle'
@@ -178,4 +179,16 @@ sourceSets.each {
 	it.output.resourcesDir = dir
 	it.java.destinationDirectory = dir
 	it.kotlin.destinationDirectory = dir
+}
+
+modrinth {
+	token = System.getenv("MODRINTH_TOKEN")
+	projectId = "wsmc-kotlin"
+	versionNumber = "${project.mod_version}-mc${project.minecraft_version}+forge"
+	versionName = "WSMC ${project.mod_version} for Forge ${project.minecraft_version}"
+	versionType = "release"
+	uploadFile = tasks.jar
+	gameVersions = project.minecraft_versions_supported
+	loaders = ["forge"]
+	changelog = file("../CHANGELOG.txt").text
 }

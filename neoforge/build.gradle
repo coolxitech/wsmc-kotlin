@@ -5,6 +5,7 @@ plugins {
 	id 'maven-publish'
 	id 'org.jetbrains.kotlin.jvm' version '2.4.20'
 	id 'net.neoforged.gradle.userdev' version '7.1.38'
+	id 'com.modrinth.minotaur' version '2.+'
 }
 
 apply from: '../common.gradle'
@@ -138,5 +139,20 @@ idea {
 	module {
 		downloadSources = true
 		downloadJavadoc = true
+	}
+}
+
+modrinth {
+	token = System.getenv("MODRINTH_TOKEN")
+	projectId = "wsmc-kotlin"
+	versionNumber = "${project.mod_version}-mc${project.minecraft_version}+neoforge"
+	versionName = "WSMC ${project.mod_version} for NeoForge ${project.minecraft_version}"
+	versionType = "release"
+	uploadFile = tasks.jar
+	gameVersions = project.minecraft_versions_supported
+	loaders = ["neoforge"]
+	changelog = file("../CHANGELOG.txt").text
+	dependencies {
+		required.project "kotlin-for-forge"
 	}
 }
