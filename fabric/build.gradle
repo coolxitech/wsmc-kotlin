@@ -108,7 +108,8 @@ modrinth {
 	versionNumber = "${project.mod_version}-mc${project.minecraft_version}+fabric"
 	versionName = "WSMC ${project.mod_version} for Fabric ${project.minecraft_version}"
 	versionType = "release"
-	uploadFile = tasks.remapJar
+	// MC 26.x is unobfuscated, so Loom 1.15 does not register a remapJar task.
+	uploadFile = tasks.jar
 	gameVersions = project.minecraft_versions_supported
 	loaders = ["fabric"]
 	changelog = file("../CHANGELOG.txt").text
