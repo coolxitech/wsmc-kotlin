@@ -102,6 +102,8 @@ jobs:
         minecraft_version_range=$(get_prop_value "$PROPS" "minecraft_version_range")
         set_action_env "GITHUB_RELEASE_TITLE" "${mod_version} for Minecraft Forge, Neoforge, and Fabric ${minecraft_versions_declared}"
         set_action_env "GITHUB_TAG_NAME" "v${mod_version}-mc${minecraft_version}"
+        set_action_env "MOD_VERSION" "${mod_version}"
+        set_action_env "MC_VERSION" "${minecraft_version}"
         set_action_env "CURSEFORGE_FABRIC" "${publish_prefix}-fabric"
         set_action_env "MC_RANGE_FABRIC" "${minecraft_version_range}"
 
@@ -208,12 +210,45 @@ jobs:
         name: release-artifacts
         path: dist
 
+    - name: Generate release body
+      run: |
+        tag="${{ env.GITHUB_TAG_NAME }}"
+        mc="${{ env.MC_VERSION }}"
+        {
+          echo '<div align="center">'
+          echo
+          echo "[![Release Downloads](https://img.shields.io/github/downloads/coolxitech/wsmc-kotlin/${tag}/total?style=flat-square&logo=github)](https://github.com/coolxitech/wsmc-kotlin/releases/${tag})"
+          echo
+          echo '</div>'
+          echo
+          echo '**Download for your mod loader:**'
+          echo
+          echo '| Loader | Download |'
+          echo '| --- | --- |'
+          for d in fabric forge neoforge; do
+            jarfile=$(find dist -type f -path "*/${d}/build/libs/*.jar" ! -name "*-sources*" ! -name "*-dev*" ! -name "*-javadoc*" ! -name "*-slim*" | head -1)
+            [ -z "$jarfile" ] && continue
+            jar=$(basename "$jarfile")
+            case "$d" in
+              fabric)   name="Fabric";   color="DBD0B4" ;;
+              forge)    name="Forge";    color="8B1E1E" ;;
+              neoforge) name="NeoForge"; color="E97E25" ;;
+            esac
+            url="https://github.com/coolxitech/wsmc-kotlin/releases/download/${tag}/${jar}"
+            echo "| ${name} | <a href='${url}'><img src='https://img.shields.io/badge/${name}-${mc}-${color}.svg'></a> <a href='https://gh-proxy.com/${url}'><img src='https://img.shields.io/badge/Mirror-gh--proxy-0366d6.svg'></a> |"
+          done
+          echo
+          echo '---'
+          echo
+          cat CHANGELOG.txt
+        } > release_body.md
+
     - name: Publish to GitHub Release
       uses: softprops/action-gh-release@v3
       with:
         tag_name: ${{ env.GITHUB_TAG_NAME }}
         name: ${{ env.GITHUB_RELEASE_TITLE }}
-        body_path: CHANGELOG.txt
+        body_path: release_body.md
         files: dist/**/*.jar
         draft: false
         prerelease: false
