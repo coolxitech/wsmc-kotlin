@@ -1,0 +1,28 @@
+name: Purge Modrinth Versions
+
+on:
+  workflow_dispatch:
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List and purge Modrinth versions
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+        run: |
+          set -euo pipefail
+          UA="coolxitech/wsmc-kotlin (github.com/coolxitech/wsmc-kotlin)"
+          echo "==> Listing versions"
+          versions=$(curl -sS -H "Authorization: $MODRINTH_TOKEN" -H "User-Agent: $UA" "https://api.modrinth.com/v2/project/bDslz66x/version")
+          echo "$versions" | jq -r '.[].id' > /tmp/ids.txt
+          count=$(wc -l < /tmp/ids.txt | tr -d ' ')
+          echo "==> Found $count versions"
+          while read -r id; do
+            [ -z "$id" ] && continue
+            echo "==> Deleting version $id"
+            code=$(curl -sS -o /tmp/del.out -w "%{http_code}" -X DELETE -H "Authorization: $MODRINTH_TOKEN" -H "User-Agent: $UA" "https://api.modrinth.com/v2/version/$id")
+            echo "    HTTP $code"
+            cat /tmp/del.out; echo
+          done < /tmp/ids.txt
+          echo "==> Done"
