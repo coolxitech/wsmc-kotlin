@@ -7,7 +7,7 @@ on:
       - 'v*'
 
 env:
-  java-version: '21'
+  java-version: '25'
   curseforge-id: 920581
 
 jobs:
