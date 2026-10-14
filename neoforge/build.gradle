@@ -153,7 +153,7 @@ modrinth {
 	versionNumber = "${project.mod_version}-mc${project.minecraft_version}+neoforge"
 	versionName = "WSMC ${project.mod_version} for NeoForge ${project.minecraft_version}"
 	versionType = "release"
-	uploadFile = tasks.jarJar
+	uploadFile = tasks.jar
 	gameVersions = project.minecraft_versions_supported
 	loaders = ["neoforge"]
 	changelog = file("../CHANGELOG.txt").text
