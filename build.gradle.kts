@@ -14,6 +14,7 @@ plugins {
     id("org.jetbrains.gradle.plugin.idea-ext") version "1.1.7"
     id("eclipse")
     id("com.gtnewhorizons.retrofuturagradle") version "2.0.2"
+    id("com.modrinth.minotaur") version "2.+"
 }
 
 @Suppress("PropertyName")
@@ -240,4 +241,18 @@ idea {
 
 tasks.named("processIdeaSettings").configure {
     dependsOn("injectTags")
+}
+
+modrinth {
+    token.set(System.getenv("MODRINTH_TOKEN"))
+    projectId.set("wsmc-kotlin")
+    versionNumber.set("${mod_version}-mc1.12.2+forge")
+    versionName.set("WSMC ${mod_version} for Forge 1.12.2")
+    versionType.set("release")
+    uploadFile.set(tasks.named("reobfJar"))
+    gameVersions.set(listOf("1.12.2"))
+    loaders.set(listOf("forge"))
+    changelog.set(file("CHANGELOG.txt").readText())
+    required.project("mixinbooter")
+    required.project("forgelin-continuous")
 }
