@@ -27,16 +27,18 @@ jobs:
         java-version: ${{ env.java-version }}
         distribution: 'temurin'
 
+    - name: Ensure Modrinth project exists
+      env:
+        MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+      run: |
+        curl -sS -X POST https://api.modrinth.com/v2/project \
+          -H "Authorization: $MODRINTH_TOKEN" \
+          -H "Content-Type: application/json" \
+          -d '{"slug":"wsmc-kotlin","title":"WSMC-Kotlin","description":"WebSocket support for Minecraft Java (client side). Kotlin rewrite of WSMC, for Forge / NeoForge / Fabric.","license_id":"LicenseRef-All-Rights-Reserved","categories":["forge","fabric","neoforge","utility"],"client_side":"required","server_side":"unsupported","project_type":"mod","source_url":"https://github.com/coolxitech/wsmc-kotlin","issues_url":"https://github.com/coolxitech/wsmc-kotlin/issues","requested_status":"approved"}' || true
+
     - name: Build Fabric
       run: |
         cd fabric
-        chmod +x ./gradlew
-        ./gradlew exportProperties build
-        cd ..
-
-    - name: Build neoforge
-      run: |
-        cd neoforge
         chmod +x ./gradlew
         ./gradlew exportProperties build
         cd ..
@@ -88,16 +90,10 @@ jobs:
         minecraft_version=$(get_prop_value "$PROPS" "minecraft_version")
         publish_prefix=$(get_prop_value "$PROPS" "publish_prefix")
         minecraft_version_range=$(get_prop_value "$PROPS" "minecraft_version_range")
-        set_action_env "GITHUB_RELEASE_TITLE" "${mod_version} for Minecraft Forge, Neoforge, and Fabric ${minecraft_versions_declared}"
+        set_action_env "GITHUB_RELEASE_TITLE" "${mod_version} for Minecraft Forge and Fabric ${minecraft_versions_declared}"
         set_action_env "GITHUB_TAG_NAME" "${mod_version}_${minecraft_version}"
         set_action_env "CURSEFORGE_FABRIC" "${publish_prefix}-fabric"
         set_action_env "MC_RANGE_FABRIC" "${minecraft_version_range}"
-
-        PROPS=$(parse_gradle_props neoforge/build/info/properties.txt)
-        publish_prefix=$(get_prop_value "$PROPS" "publish_prefix")
-        minecraft_version_range=$(get_prop_value "$PROPS" "minecraft_version_range")
-        set_action_env "CURSEFORGE_NEOFORGE" "${publish_prefix}-neoforge"
-        set_action_env "MC_RANGE_NEOFORGE" "${minecraft_version_range}"
 
         PROPS=$(parse_gradle_props forge/build/info/properties.txt)
         publish_prefix=$(get_prop_value "$PROPS" "publish_prefix")
@@ -119,7 +115,6 @@ jobs:
         github-prerelease: false
 
         files: |
-          neoforge/build/libs/!(*-@(dev|sources|javadoc|slim)).jar
           forge/build/libs/!(*-@(dev|sources|javadoc|slim)).jar
           fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
 
@@ -137,21 +132,6 @@ jobs:
         files: fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
         java: Java ${{ env.java-version }}
 
-    - name: Publish to CurseForge (Neoforge version)
-      uses: Kir-Antipov/mc-publish@v3.3
-      with:
-        changelog-file: CHANGELOG.txt
-        # Only include this section if you wish to publish your assets on CurseForge.
-        curseforge-id: ${{ env.curseforge-id }}
-        curseforge-token: "${{ secrets.CURSEFORGE_TOKEN }}"
-
-        name: ${{ env.CURSEFORGE_NEOFORGE }}
-        game-versions: "${{ env.MC_RANGE_NEOFORGE }}"
-        loaders: neoforge
-        version-type: beta
-        files: neoforge/build/libs/!(*-@(dev|sources|javadoc|slim)).jar
-        java: Java ${{ env.java-version }}
-
     - name: Publish to CurseForge (Forge version)
       uses: Kir-Antipov/mc-publish@v3.3
       with:
@@ -165,3 +145,17 @@ jobs:
         version-type: beta
         files: forge/build/libs/!(*-@(dev|sources|javadoc|slim)).jar
         java: Java ${{ env.java-version }}
+
+    - name: Publish to Modrinth (Fabric)
+      env:
+        MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+      run: |
+        cd fabric
+        ./gradlew modrinth
+
+    - name: Publish to Modrinth (Forge)
+      env:
+        MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+      run: |
+        cd forge
+        ./gradlew modrinth
