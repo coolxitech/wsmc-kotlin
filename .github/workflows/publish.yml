@@ -94,7 +94,7 @@ jobs:
         publish_prefix=$(get_prop_value "$PROPS" "publish_prefix")
         minecraft_version_range=$(get_prop_value "$PROPS" "minecraft_version_range")
         set_action_env "GITHUB_RELEASE_TITLE" "${mod_version} for Minecraft Forge and Fabric ${minecraft_versions_declared}"
-        set_action_env "GITHUB_TAG_NAME" "${mod_version}_${minecraft_version}"
+        set_action_env "GITHUB_TAG_NAME" "v${mod_version}-mc${minecraft_version}"
         set_action_env "CURSEFORGE_FABRIC" "${publish_prefix}-fabric"
         set_action_env "MC_RANGE_FABRIC" "${minecraft_version_range}"
 
@@ -137,11 +137,49 @@ jobs:
         MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
       run: |
         cd fabric
-        ./gradlew modrinth
+        ./gradlew modrinth || true
 
     - name: Publish to Modrinth (Forge)
       env:
         MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
       run: |
         cd forge
-        ./gradlew modrinth
+        ./gradlew modrinth || true
+
+    - name: Collect release artifacts
+      uses: actions/upload-artifact@v7
+      with:
+        name: release-artifacts
+        path: |
+          fabric/build/libs/*.jar
+          !fabric/build/libs/*-dev.jar
+          !fabric/build/libs/*-sources.jar
+          !fabric/build/libs/*-javadoc.jar
+          forge/build/libs/*.jar
+          !forge/build/libs/*-dev.jar
+          !forge/build/libs/*-sources.jar
+          !forge/build/libs/*-javadoc.jar
+          !forge/build/libs/*-slim.jar
+          neoforge/build/libs/*.jar
+          !neoforge/build/libs/*-dev.jar
+          !neoforge/build/libs/*-sources.jar
+          !neoforge/build/libs/*-javadoc.jar
+          !neoforge/build/libs/*-slim.jar
+        if-no-files-found: warn
+
+    - name: Download release artifacts
+      uses: actions/download-artifact@v8
+      with:
+        name: release-artifacts
+        path: dist
+
+    - name: Publish to GitHub Release
+      uses: softprops/action-gh-release@v3
+      with:
+        tag_name: ${{ env.GITHUB_TAG_NAME }}
+        name: ${{ env.GITHUB_RELEASE_TITLE }}
+        body_path: CHANGELOG.txt
+        files: dist/**/*.jar
+        draft: false
+        prerelease: false
+
