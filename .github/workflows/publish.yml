@@ -165,21 +165,21 @@ jobs:
         MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
       run: |
         cd fabric
-        ./gradlew modrinth || true
+        ./gradlew modrinth
 
     - name: Publish to Modrinth (NeoForge)
       env:
         MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
       run: |
         cd neoforge
-        ./gradlew modrinth || true
+        ./gradlew modrinth
 
     - name: Publish to Modrinth (Forge)
       env:
         MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
       run: |
         cd forge
-        ./gradlew modrinth || true
+        ./gradlew modrinth
 
     - name: Collect release artifacts
       uses: actions/upload-artifact@v7
