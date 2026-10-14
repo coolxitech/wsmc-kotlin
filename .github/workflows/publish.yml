@@ -117,24 +117,6 @@ jobs:
         set_action_env "CURSEFORGE_FORGE" "${publish_prefix}-forge"
         set_action_env "MC_RANGE_FORGE" "${minecraft_version_range}"
 
-    - name: Publish to GitHub
-      uses: Kir-Antipov/mc-publish@v3.3.1
-      with:
-        name: ${{ env.GITHUB_RELEASE_TITLE }}
-        changelog-file: CHANGELOG.txt
-
-        # Only include this section if you wish to publish your assets on GitHub.
-        github-tag: ${{ env.GITHUB_TAG_NAME }}
-        github-commitish: ${{ github.sha }}
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        github-draft: false
-        github-prerelease: false
-
-        files: |
-          neoforge/build/libs/!(*-@(dev|sources|javadoc|slim)).jar
-          forge/build/libs/!(*-@(dev|sources|javadoc|slim)).jar
-          fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
-
     - name: Publish to CurseForge (Fabric version)
       uses: Kir-Antipov/mc-publish@v3.3.1
       with:
