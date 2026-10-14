@@ -72,14 +72,22 @@ def version_prefix = (minSupportedVersion == maxSupportedVersion) ? minSupported
 project.ext.publish_prefix = version_prefix + '-' + project.ext.mod_version;
 
 // Define a custom task to dump properties
+// Values are captured at configuration time so the task is compatible with
+// Gradle configuration cache (task actions must not touch the Project object).
+def exportPropsFile = file("$buildDir/info/properties.txt")
+def exportMergedProps = mergedProperties.collect { key, value -> "${key}=${value}" }.join('\n')
+def exportMcVersionRange = project.minecraft_version_range
+def exportMcVersionsSupported = project.minecraft_versions_supported.join(', ')
+def exportPublishPrefix = project.publish_prefix
+
 task exportProperties {
-	outputs.file file("$buildDir/info/properties.txt")
+	outputs.file exportPropsFile
 	doLast {
-		outputs.files.singleFile.withWriter { writer -> {
-			mergedProperties.each { key, value -> writer.writeLine("${key}=${value}"); }
-			writer.writeLine("minecraft_version_range=${project.minecraft_version_range}");
-			writer.writeLine("minecraft_versions_supported=${project.minecraft_versions_supported.join(', ')}");
-			writer.writeLine("publish_prefix=${project.publish_prefix}");
-		}}
+		exportPropsFile.withWriter { writer ->
+			writer.write(exportMergedProps)
+			writer.write("\nminecraft_version_range=${exportMcVersionRange}\n")
+			writer.write("minecraft_versions_supported=${exportMcVersionsSupported}\n")
+			writer.write("publish_prefix=${exportPublishPrefix}\n")
+		}
 	}
 }
