@@ -6,7 +6,7 @@ on:
       - 'legacy-v*'
 
 env:
-  java-version: '17'
+  java-version: '25'
 
 permissions:
   contents: write
